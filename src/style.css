@@ -1,0 +1,50 @@
+html,
+body,
+#app {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  font-family: Inter, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #eef3f9;
+  color: #0f172a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.x6-widget-selection-box {
+  border: 1px solid #3b82f6;
+}
+
+@keyframes ant-line-flow {
+  to {
+    stroke-dashoffset: -12;
+  }
+}
+
+@keyframes flow {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
