@@ -49,8 +49,10 @@ function onDragStart(event: DragEvent, type: string) {
 
 .palette-group__title {
   font-size: 12px;
-  color: #8ba3c7;
+  color: #8fc0e8;
   font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .palette-group__items {
@@ -59,23 +61,26 @@ function onDragStart(event: DragEvent, type: string) {
 }
 
 .palette-item {
-  border: 1px solid #1d2a44;
-  background: #0f1b2f;
+  border: 1px solid #28456d;
+  background: linear-gradient(180deg, rgba(20, 39, 66, 0.9), rgba(13, 28, 49, 0.9));
   border-radius: 10px;
   padding: 10px;
   cursor: pointer;
   text-align: left;
   transition: all 0.2s ease;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
 }
 
 .palette-item:hover {
-  border-color: #00d4ff;
-  background: #11233d;
+  border-color: #43d8ff;
+  background: linear-gradient(180deg, rgba(23, 48, 80, 0.95), rgba(14, 35, 61, 0.95));
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.3), 0 0 16px rgba(0, 212, 255, 0.2);
 }
 
 .palette-item__label {
   display: block;
-  color: #d7e6ff;
+  color: #e7f2ff;
   font-weight: 600;
 }
 
@@ -83,6 +88,7 @@ function onDragStart(event: DragEvent, type: string) {
   display: block;
   margin-top: 4px;
   font-size: 12px;
-  color: #7c94b5;
+  color: #7fb2d8;
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
 }
 </style>

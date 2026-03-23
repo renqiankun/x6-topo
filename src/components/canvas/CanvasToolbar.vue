@@ -74,10 +74,10 @@ const emit = defineEmits<{
 .toolbar {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 10px 12px;
-  border-bottom: 1px solid #1d2a44;
-  background: #0f1b2f;
+  gap: 10px;
+  padding: 10px 12px 11px;
+  border-bottom: 1px solid #24436d;
+  background: linear-gradient(90deg, rgba(15, 32, 56, 0.96), rgba(12, 25, 44, 0.96));
 }
 
 .toolbar__actions {
@@ -89,7 +89,15 @@ const emit = defineEmits<{
 .toolbar__status {
   display: flex;
   gap: 12px;
-  color: #93a7c2;
+  color: #8fb7d8;
   font-size: 12px;
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+}
+
+.toolbar__status > span {
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid #2b4d77;
+  background: rgba(8, 20, 37, 0.72);
 }
 </style>

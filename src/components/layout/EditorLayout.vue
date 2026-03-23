@@ -91,20 +91,22 @@ const emit = defineEmits<{
   height: 100vh;
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr) 360px;
-  gap: 16px;
-  padding: 16px;
+  gap: 14px;
+  padding: 14px;
   box-sizing: border-box;
-  background: #060d18;
+  background: transparent;
 }
 
 .editor-layout__left,
 .editor-layout__right {
   min-width: 0;
   overflow: auto;
-  border: 1px solid #1d2a44;
+  border: 1px solid #1f365a;
   border-radius: 14px;
-  padding: 12px;
-  background: #0a1220;
+  padding: 10px;
+  background: rgba(8, 19, 37, 0.8);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .editor-layout__center {
@@ -114,6 +116,15 @@ const emit = defineEmits<{
 @media (max-width: 1280px) {
   .editor-layout {
     grid-template-columns: 240px minmax(0, 1fr) 320px;
+  }
+}
+
+@media (max-width: 1080px) {
+  .editor-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(420px, 1fr) auto;
+    height: auto;
+    min-height: 100vh;
   }
 }
 </style>

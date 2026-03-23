@@ -66,9 +66,14 @@ const emit = defineEmits<{
 }
 
 .property-panel__title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #d7e6ff;
+  font-size: 13px;
+  font-weight: 700;
+  color: #b9dbff;
+  letter-spacing: 0.04em;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #28466e;
+  background: linear-gradient(90deg, rgba(0, 212, 255, 0.13), rgba(0, 212, 255, 0.02));
 }
 
 .multi-actions {
@@ -78,7 +83,7 @@ const emit = defineEmits<{
 
 .multi-count {
   margin-top: 10px;
-  color: #7c94b5;
+  color: #8fb0d3;
   font-size: 12px;
 }
 </style>

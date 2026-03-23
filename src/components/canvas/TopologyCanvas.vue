@@ -69,14 +69,18 @@ onMounted(() => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #0a1220;
-  border: 1px solid #1d2a44;
+  background: linear-gradient(180deg, rgba(10, 22, 40, 0.9) 0%, rgba(7, 18, 34, 0.92) 100%);
+  border: 1px solid #22406a;
   border-radius: 14px;
   overflow: hidden;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35), 0 0 24px rgba(0, 212, 255, 0.08);
 }
 
 .topology-canvas__container {
   flex: 1;
   min-height: 640px;
+  background-image:
+    radial-gradient(circle at 15% 12%, rgba(0, 212, 255, 0.06), transparent 35%),
+    radial-gradient(circle at 85% 88%, rgba(0, 255, 157, 0.05), transparent 35%);
 }
 </style>
