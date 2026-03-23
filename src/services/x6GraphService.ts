@@ -171,7 +171,23 @@ export function createGraph(container: HTMLElement, canvasProps: CanvasProps = d
     History && new History({ enabled: true }),
     Clipboard && new Clipboard({ enabled: true }),
     Snapline && new Snapline({ enabled: true }),
-    Transform && new Transform({ resizing: { enabled: true, minWidth: 30, minHeight: 30 }, rotating: { enabled: true, grid: 15 } }),
+    Transform && new Transform({
+      resizing: {
+        enabled(node: any) {
+          const data = node?.getData?.() || {}
+          return !data.locked && (data.resizable ?? true)
+        },
+        minWidth: 30,
+        minHeight: 30,
+      },
+      rotating: {
+        enabled(node: any) {
+          const data = node?.getData?.() || {}
+          return !data.locked && (data.rotatable ?? true)
+        },
+        grid: 15,
+      },
+    }),
   ].filter(Boolean)
 
   pluginDefs.forEach((plugin) => {
@@ -587,6 +603,11 @@ export function patchNodeMeta(graph: Graph, id: string, payload: Partial<NodeSel
   const node = graph.getCellById(id)
   if (!node || !node.isNode()) return
   node.setData({ ...node.getData(), ...deepClone(payload) })
+
+  if ('rotatable' in payload || 'resizable' in payload || 'locked' in payload) {
+    const transform = graph.getPlugin<any>('transform')
+    if (transform?.createWidget) transform.createWidget(node)
+  }
 }
 
 export function patchEdgeStyle(graph: Graph, id: string, payload: EdgeSelectionData) {
