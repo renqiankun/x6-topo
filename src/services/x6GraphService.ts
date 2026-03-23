@@ -2,6 +2,7 @@ import {
   Clipboard,
   Graph,
   History,
+  Keyboard,
   Selection,
   Snapline,
   Transform,
@@ -167,6 +168,7 @@ export function createGraph(container: HTMLElement, canvasProps: CanvasProps = d
   } as any)
 
   const pluginDefs = [
+    Keyboard && new Keyboard({ enabled: true }),
     Selection && new Selection({ enabled: true, multiple: true, rubberband: true, rubberNode: true, rubberEdge: true, showNodeSelectionBox: false, showEdgeSelectionBox: false, pointerEvents: 'none' }),
     History && new History({ enabled: true }),
     Clipboard && new Clipboard({ enabled: true }),
@@ -336,7 +338,7 @@ export function bindGraphKeyboard(graph: Graph, handlers: {
   onUngroup: () => void
   onSelectAll: () => void
 }) {
-  graph.bindKey(['backspace', 'delete'], () => {
+  graph.bindKey(['backspace', 'delete', 'del'], () => {
     handlers.onDelete()
     return false
   })
@@ -348,11 +350,11 @@ export function bindGraphKeyboard(graph: Graph, handlers: {
     handlers.onRedo()
     return false
   })
-  graph.bindKey('ctrl+c', () => {
+  graph.bindKey(['ctrl+c', 'meta+c', 'ctrl+insert'], () => {
     handlers.onCopy()
     return false
   })
-  graph.bindKey('ctrl+v', () => {
+  graph.bindKey(['ctrl+v', 'meta+v', 'shift+insert'], () => {
     handlers.onPaste()
     return false
   })
