@@ -22,6 +22,7 @@
     @clear="handleClear"
     @export="handleExport"
     @import="handleImport"
+    @preview="handlePreview"
     @update-canvas="handleCanvasChange"
     @update-node-patch="handleNodePatch"
     @update-node-ports="handleNodePortsChange"
@@ -29,13 +30,20 @@
     @update-edge-style="handleEdgeStyleChange"
     @update-edge-extra-attrs="handleEdgeExtraAttrsChange"
   />
+  <TopologyPreviewDialog
+    v-model="previewVisible"
+    :topology-json="previewTopologyJson"
+    :data-json="previewDataJson"
+    @update:data-json="previewDataJson = $event"
+  />
 </template>
 
 <script setup lang="ts">
-import { nextTick } from 'vue'
+import { nextTick, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { Graph } from '@antv/x6'
 import EditorLayout from './components/layout/EditorLayout.vue'
+import TopologyPreviewDialog from './components/preview/TopologyPreviewDialog.vue'
 import { useEditorStore } from './stores/editor'
 import { useGraphStore } from './stores/graph'
 import {
@@ -68,6 +76,37 @@ import type { CanvasProps, EdgeSelectionData, NodeSelectionData, PortCountConfig
 
 const editorStore = useEditorStore()
 const graphStore = useGraphStore()
+const previewVisible = ref(false)
+const previewTopologyJson = ref('')
+const previewDataJson = ref(`{
+  // key = 设备或线的唯一标识（优先 runtimeId，也支持 devId / cell.id）
+  "DG-01": {
+    "__comment": "设备常用字段",
+    "label": "发电机1",
+    "status": "running",
+    "hide": false,
+    "bgColor": "#062338",
+    "borderColor": "#22c55e",
+    "strokeWidth": 2,
+    "fontColor": "#e0f0ff",
+    "fontSize": 11,
+    "showLabel": true,
+    "opacity": 1
+  },
+  "LINE-01": {
+    "__comment": "线常用字段",
+    "label": "主干线A",
+    "status": "running",
+    "hide": false,
+    "lineColor": "#38bdf8",
+    "lineWidth": 2.5,
+    "lineDash": "10 6",
+    "lineAnim": true,
+    "lineAnimSpeed": 2,
+    "lineAnimDir": "forward",
+    "opacity": 1
+  }
+}`)
 
 function getGraph() {
   return graphStore.graph as Graph | null
@@ -364,7 +403,7 @@ function handleDemo() {
   loadDemoTopology(graph)
   syncSelectionByIds([])
   updateStats()
-  ElMessage.success('已加载示例拓扑')
+  ElMessage.success('示例拓扑已加载')
 }
 
 function handleClear() {
@@ -391,6 +430,13 @@ function handleExport() {
   const json = exportTopology(graph, graphStore.canvasProps)
   downloadTextFile('topology.json', json)
   ElMessage.success('拓扑已导出')
+}
+
+function handlePreview() {
+  const graph = getGraph()
+  if (!graph) return
+  previewTopologyJson.value = exportTopology(graph, graphStore.canvasProps)
+  previewVisible.value = true
 }
 
 async function handleImport() {

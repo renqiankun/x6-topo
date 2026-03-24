@@ -100,6 +100,9 @@
         <el-form-item label="电压等级">
           <el-input :model-value="modelValue.voltage" @input="update('voltage', String($event))" />
         </el-form-item>
+        <el-form-item label="唯一标识">
+          <el-input :model-value="modelValue.runtimeId" @input="update('runtimeId', String($event))" />
+        </el-form-item>
         <el-form-item label="电流(A)">
           <el-input-number :model-value="modelValue.amp" :min="0" :step="10" @change="update('amp', Number($event))" />
         </el-form-item>

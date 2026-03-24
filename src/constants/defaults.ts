@@ -90,6 +90,7 @@ export function makePortsFromList(portList: PortPositionConfig[]): PortsConfig {
 }
 
 export const defaultNodeSelectionData: Omit<NodeSelectionData, 'id'> = {
+  runtimeId: '',
   label: '',
   deviceType: '',
   status: 'running',
@@ -120,6 +121,7 @@ export const defaultNodeSelectionData: Omit<NodeSelectionData, 'id'> = {
 }
 
 export const defaultEdgeSelectionData: Omit<EdgeSelectionData, 'id'> = {
+  runtimeId: '',
   label: '',
   lineType: 'overhead',
   color: '#00d4ff',

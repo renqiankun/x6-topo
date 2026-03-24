@@ -27,6 +27,7 @@
         @clear="emit('clear')"
         @export="emit('export')"
         @import="emit('import')"
+        @preview="emit('preview')"
       />
     </main>
 
@@ -77,6 +78,7 @@ const emit = defineEmits<{
   clear: []
   export: []
   import: []
+  preview: []
   updateCanvas: [value: CanvasProps]
   updateNodePatch: [value: Partial<NodeSelectionData>]
   updateNodePorts: [value: { portCounts: PortCountConfig; portList: PortPositionConfig[] }]

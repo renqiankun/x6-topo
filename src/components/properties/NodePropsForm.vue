@@ -138,6 +138,9 @@
         <el-form-item label="电压等级">
           <el-input :model-value="modelValue.voltage" @input="emitPatch('voltage', String($event))" />
         </el-form-item>
+        <el-form-item label="唯一标识">
+          <el-input :model-value="modelValue.runtimeId" @input="emitPatch('runtimeId', String($event))" />
+        </el-form-item>
         <el-form-item label="设备编号">
           <el-input :model-value="modelValue.devId" @input="emitPatch('devId', String($event))" />
         </el-form-item>

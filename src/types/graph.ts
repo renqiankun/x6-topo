@@ -51,6 +51,7 @@ export interface CanvasProps {
 
 export interface NodeSelectionData {
   id: string
+  runtimeId: string
   label: string
   deviceType: string
   status: DeviceStatus
@@ -82,6 +83,7 @@ export interface NodeSelectionData {
 
 export interface EdgeSelectionData {
   id: string
+  runtimeId: string
   label: string
   lineType: EdgeLineType
   color: string

@@ -21,6 +21,7 @@
       @clear="emit('clear')"
       @export="emit('export')"
       @import="emit('import')"
+      @preview="emit('preview')"
     />
     <div ref="containerRef" class="topology-canvas__container"></div>
   </div>
@@ -55,6 +56,7 @@ const emit = defineEmits<{
   clear: []
   export: []
   import: []
+  preview: []
 }>()
 
 const containerRef = ref<HTMLDivElement>()

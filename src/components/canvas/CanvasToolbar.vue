@@ -30,6 +30,7 @@
         <el-button size="small" @click="emit('clear')">清空</el-button>
         <el-button size="small" @click="emit('export')">导出</el-button>
         <el-button size="small" @click="emit('import')">导入</el-button>
+        <el-button size="small" @click="emit('preview')">预览</el-button>
       </el-button-group>
     </div>
 
@@ -67,6 +68,7 @@ const emit = defineEmits<{
   clear: []
   export: []
   import: []
+  preview: []
 }>()
 </script>
 

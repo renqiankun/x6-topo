@@ -111,8 +111,17 @@ export function registerCustomNodes() {
   nodeRegistered = true
 }
 
-export function createGraph(container: HTMLElement, canvasProps: CanvasProps = defaultCanvasProps) {
+export interface CreateGraphOptions {
+  previewMode?: boolean
+}
+
+export function createGraph(
+  container: HTMLElement,
+  canvasProps: CanvasProps = defaultCanvasProps,
+  options: CreateGraphOptions = {},
+) {
   registerCustomNodes()
+  const previewMode = options.previewMode === true
 
   let graph!: Graph
   graph = new Graph({
@@ -125,12 +134,17 @@ export function createGraph(container: HTMLElement, canvasProps: CanvasProps = d
       type: canvasProps.gridType,
       args: { color: canvasProps.gridColor, thickness: 1 },
     },
-    mousewheel: canvasProps.mousewheel
-      ? { enabled: true, zoomAtMousePosition: true, modifiers: ['ctrl', 'meta'], minScale: 0.15, maxScale: 4 }
-      : undefined,
-    panning: canvasProps.panning ? { enabled: true, modifiers: ['space'] } : false,
+    mousewheel: previewMode
+      ? { enabled: true, zoomAtMousePosition: true, modifiers: [], minScale: 0.15, maxScale: 4 }
+      : (canvasProps.mousewheel
+        ? { enabled: true, zoomAtMousePosition: true, modifiers: ['ctrl', 'meta'], minScale: 0.15, maxScale: 4 }
+        : undefined),
+    panning: previewMode
+      ? { enabled: true, modifiers: [] }
+      : (canvasProps.panning ? { enabled: true, modifiers: ['space'] } : false),
     translating: { restrict: false },
     interacting(cellView: any) {
+      if (previewMode) return false
       const data = cellView.cell.getData() || {}
       if (data.locked) return false
       return { nodeMovable: true, edgeMovable: true, edgeLabelMovable: true }
@@ -139,7 +153,9 @@ export function createGraph(container: HTMLElement, canvasProps: CanvasProps = d
       router: { name: 'orth', args: { padding: 20 } },
       connector: { name: 'rounded', args: { radius: 8 } },
       anchor: 'center',
-      connectionPoint: 'anchor',
+      // In preview mode, some imported edges may not have endpoint anchors.
+      // Use boundary to avoid runtime "Anchor should be specified" errors.
+      connectionPoint: previewMode ? 'boundary' : 'anchor',
       allowBlank: false,
       allowLoop: false,
       allowMulti: true,
@@ -167,30 +183,32 @@ export function createGraph(container: HTMLElement, canvasProps: CanvasProps = d
     },
   } as any)
 
-  const pluginDefs = [
-    Keyboard && new Keyboard({ enabled: true }),
-    Selection && new Selection({ enabled: true, multiple: true, rubberband: true, rubberNode: true, rubberEdge: true, showNodeSelectionBox: false, showEdgeSelectionBox: false, pointerEvents: 'none' }),
-    History && new History({ enabled: true }),
-    Clipboard && new Clipboard({ enabled: true }),
-    Snapline && new Snapline({ enabled: true }),
-    Transform && new Transform({
-      resizing: {
-        enabled(node: any) {
-          const data = node?.getData?.() || {}
-          return !data.locked && (data.resizable ?? true)
+  const pluginDefs = previewMode
+    ? []
+    : [
+      Keyboard && new Keyboard({ enabled: true }),
+      Selection && new Selection({ enabled: true, multiple: true, rubberband: true, rubberNode: true, rubberEdge: true, showNodeSelectionBox: false, showEdgeSelectionBox: false, pointerEvents: 'none' }),
+      History && new History({ enabled: true }),
+      Clipboard && new Clipboard({ enabled: true }),
+      Snapline && new Snapline({ enabled: true }),
+      Transform && new Transform({
+        resizing: {
+          enabled(node: any) {
+            const data = node?.getData?.() || {}
+            return !data.locked && (data.resizable ?? true)
+          },
+          minWidth: 30,
+          minHeight: 30,
         },
-        minWidth: 30,
-        minHeight: 30,
-      },
-      rotating: {
-        enabled(node: any) {
-          const data = node?.getData?.() || {}
-          return !data.locked && (data.rotatable ?? true)
+        rotating: {
+          enabled(node: any) {
+            const data = node?.getData?.() || {}
+            return !data.locked && (data.rotatable ?? true)
+          },
+          grid: 15,
         },
-        grid: 15,
-      },
-    }),
-  ].filter(Boolean)
+      }),
+    ].filter(Boolean)
 
   pluginDefs.forEach((plugin) => {
     try {
@@ -200,7 +218,7 @@ export function createGraph(container: HTMLElement, canvasProps: CanvasProps = d
     }
   })
 
-  graph.enableKeyboard()
+  if (!previewMode) graph.enableKeyboard()
 
   return graph
 }
@@ -243,6 +261,7 @@ export function addDeviceNode(graph: Graph, type: string, x: number, y: number) 
     ports: portsConfig,
     data: {
       ...deepClone(defaultNodeSelectionData),
+      runtimeId: '',
       label: device.label,
       deviceType: device.type,
       voltage: device.defaultVoltage ?? '10kV',
@@ -722,6 +741,7 @@ export function readNodeSelection(graph: Graph, id: string): NodeSelectionData |
 
   return {
     id: node.id,
+    runtimeId: data.runtimeId ?? data.devId ?? '',
     label: data.label ?? node.attr('label/text') ?? '',
     deviceType: data.deviceType ?? 'device',
     status: data.status ?? 'running',
@@ -765,6 +785,7 @@ export function readEdgeSelection(graph: Graph, id: string): EdgeSelectionData |
 
   return {
     id: edge.id,
+    runtimeId: data.runtimeId ?? '',
     label: data.label ?? (edge.getLabels()?.[0]?.attrs?.text?.text || ''),
     lineType: data.lineType ?? 'overhead',
     color: line.stroke ?? '#00d4ff',
