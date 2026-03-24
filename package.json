@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@antv/x6": "^3.1.7",
+    "@antv/x6-vue-shape": "^3.0.2",
     "element-plus": "^2.13.6",
     "pinia": "^3.0.4",
     "sass": "^1.98.0",

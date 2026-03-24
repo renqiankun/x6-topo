@@ -1,7 +1,20 @@
 <template>
   <div class="editor-layout">
     <aside class="editor-layout__left">
-      <DevicePalette @add="emit('addDevice', $event)" />
+      <el-tabs class="left-tabs" stretch>
+        <el-tab-pane label="设备库">
+          <DevicePalette @add="emit('addDevice', $event)" />
+        </el-tab-pane>
+        <el-tab-pane label="画布列表">
+          <CanvasObjectList
+            :items="canvasItems"
+            :selected-ids="selectedCellIds"
+            :hovered-id="hoveredCellId"
+            @hover="emit('hoverCell', $event)"
+            @select="emit('selectCell', $event)"
+          />
+        </el-tab-pane>
+      </el-tabs>
     </aside>
 
     <main class="editor-layout__center">
@@ -48,19 +61,25 @@
 
 <script setup lang="ts">
 import DevicePalette from '../palette/DevicePalette.vue'
+import CanvasObjectList from '../palette/CanvasObjectList.vue'
 import TopologyCanvas from '../canvas/TopologyCanvas.vue'
 import PropertyPanel from '../properties/PropertyPanel.vue'
-import type { CanvasProps, EdgeSelectionData, NodeSelectionData, PortCountConfig, PortPositionConfig } from '../../types/graph'
+import type { CanvasListItem, CanvasProps, EdgeSelectionData, NodeSelectionData, PortCountConfig, PortPositionConfig } from '../../types/graph'
 
 defineProps<{
   nodeCount: number
   edgeCount: number
   zoomPct: number
   mousePos: { x: number; y: number }
+  canvasItems: CanvasListItem[]
+  selectedCellIds: string[]
+  hoveredCellId: string | null
 }>()
 
 const emit = defineEmits<{
   addDevice: [type: string]
+  hoverCell: [id: string | null]
+  selectCell: [id: string]
   graphReady: [container: HTMLDivElement]
   undo: []
   redo: []
@@ -113,6 +132,14 @@ const emit = defineEmits<{
 
 .editor-layout__center {
   min-width: 0;
+}
+
+.left-tabs:deep(.el-tabs__item) {
+  color: #8fb7d8;
+}
+
+.left-tabs:deep(.el-tabs__item.is-active) {
+  color: #dff2ff;
 }
 
 @media (max-width: 1280px) {

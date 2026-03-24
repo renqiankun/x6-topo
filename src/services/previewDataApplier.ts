@@ -230,7 +230,7 @@ export function registerPreviewEdgePatchHandler(key: string, handler: PatchHandl
 
 function getCellKeys(cell: any): string[] {
   const data = cell.getData?.() || {}
-  const keys = [cell.id, data.runtimeId, data.devId].filter(Boolean).map((value) => String(value))
+  const keys = [cell.id, data.runtimeId].filter(Boolean).map((value) => String(value))
   return [...new Set(keys)]
 }
 

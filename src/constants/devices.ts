@@ -1,4 +1,4 @@
-import type { DeviceCategory, DeviceDefinition } from '../types/graph'
+﻿import type { DeviceCategory, DeviceDefinition } from '../types/graph'
 import { deviceSVGMap } from './svgs'
 
 function mk(
@@ -9,7 +9,7 @@ function mk(
   fill = '#071830',
   stroke = '#00d4ff',
   strokeWidth = 2,
-  defaultVoltage = '10kV',
+  extra: Partial<DeviceDefinition> = {},
 ): DeviceDefinition {
   return {
     category,
@@ -20,7 +20,7 @@ function mk(
     fill,
     stroke,
     strokeWidth,
-    defaultVoltage,
+    ...extra,
   }
 }
 
@@ -62,6 +62,14 @@ export const deviceCategories: DeviceCategory[] = [
     devices: [
       mk('保护设备', 'arrester', '避雷器', { w: 60, h: 65 }, '#190000', '#ff4444'),
       mk('保护设备', 'ground', '接地', { w: 55, h: 60 }, '#0d1220', '#6a90b8', 1.5),
+    ],
+  },
+  {
+    name: '扩展类型',
+    devices: [
+      mk('扩展类型', 'text_device', '纯文本设备', { w: 140, h: 42 }, '#0d1a30', '#66b6ff', 1.5, { renderKind: 'text' }),
+      mk('扩展类型', 'graphic_device', '纯图形设备', { w: 70, h: 70 }, '#0d1a30', '#4ade80', 2, { renderKind: 'graphic' }),
+      mk('扩展类型', 'vue_component_node', 'Vue组件节点', { w: 188, h: 96 }, '#0d1a30', '#22d3ee', 2, { renderKind: 'vue' }),
     ],
   },
 ]

@@ -108,7 +108,6 @@ export const defaultNodeSelectionData: Omit<NodeSelectionData, 'id'> = {
   labelPos: 'bottom',
   showLabel: true,
   voltage: '10kV',
-  devId: '',
   rotatable: true,
   resizable: true,
   locked: false,

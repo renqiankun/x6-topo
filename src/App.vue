@@ -4,8 +4,13 @@
     :edge-count="graphStore.edgeCount"
     :zoom-pct="graphStore.zoomPct"
     :mouse-pos="graphStore.mousePos"
+    :canvas-items="canvasItems"
+    :selected-cell-ids="editorStore.selectedCellIds"
+    :hovered-cell-id="hoveredCellId"
     @graph-ready="handleGraphReady"
     @add-device="handleAddDevice"
+    @hover-cell="handleListHover"
+    @select-cell="handleListSelect"
     @undo="handleUndo"
     @redo="handleRedo"
     @copy="handleCopy"
@@ -72,14 +77,16 @@ import {
 } from './services/x6GraphService'
 import { loadDemoTopology } from './services/demoTopology'
 import { exportTopology, parseTopology } from './services/serializer'
-import type { CanvasProps, EdgeSelectionData, NodeSelectionData, PortCountConfig, PortPositionConfig } from './types/graph'
+import type { CanvasListItem, CanvasProps, EdgeSelectionData, NodeSelectionData, PortCountConfig, PortPositionConfig } from './types/graph'
 
 const editorStore = useEditorStore()
 const graphStore = useGraphStore()
+const canvasItems = ref<CanvasListItem[]>([])
+const hoveredCellId = ref<string | null>(null)
 const previewVisible = ref(false)
 const previewTopologyJson = ref('')
 const previewDataJson = ref(`{
-  // key = 设备或线的唯一标识（优先 runtimeId，也支持 devId / cell.id）
+  // key = 设备或线的唯一标识（优先 runtimeId，也支持 cell.id）
   "DG-01": {
     "__comment": "设备常用字段",
     "label": "发电机1",
@@ -120,13 +127,46 @@ function updateStats() {
     edgeCount: graph.getEdges().length,
     zoomPct: Math.round(graph.zoom() * 100),
   })
+  updateCanvasItems()
+}
+
+function updateCanvasItems() {
+  const graph = getGraph()
+  if (!graph) {
+    canvasItems.value = []
+    return
+  }
+
+  const nodes = graph.getNodes().map((node) => {
+    const data = node.getData() || {}
+    const label = String(data.label ?? node.attr('label/text') ?? node.id)
+    return {
+      id: node.id,
+      kind: 'node' as const,
+      label,
+      type: String(data.deviceType || node.shape || 'node'),
+    }
+  })
+
+  const edges = graph.getEdges().map((edge) => {
+    const data = edge.getData() || {}
+    const label = String(data.label ?? edge.getLabels()?.[0]?.attrs?.text?.text ?? edge.id)
+    return {
+      id: edge.id,
+      kind: 'edge' as const,
+      label,
+      type: String(data.lineType || 'edge'),
+    }
+  })
+
+  canvasItems.value = [...nodes, ...edges]
 }
 
 function syncSelectionByIds(ids: string[]) {
   const graph = getGraph()
   if (!graph) return
 
-  highlightSelection(graph, ids)
+  applySelectionEffects(ids)
 
   if (!ids.length) {
     editorStore.setSelection('canvas', null, [])
@@ -158,6 +198,47 @@ function syncSelectionByIds(ids: string[]) {
     editorStore.setSelection('edge', id, ids)
     graphStore.setSelectedEdge(readEdgeSelection(graph, id))
   }
+}
+
+function applySelectionEffects(selectedIds: string[]) {
+  const graph = getGraph()
+  if (!graph) return
+  highlightSelection(graph, selectedIds)
+
+  const hoverId = hoveredCellId.value
+  if (!hoverId || selectedIds.includes(hoverId)) return
+  const cell = graph.getCellById(hoverId)
+  if (!cell) return
+
+  if (cell.isNode()) {
+    cell.attr('body/filter', 'drop-shadow(0 0 3px rgba(79,211,255,0.95)) drop-shadow(0 0 5px rgba(79,211,255,0.75))')
+    return
+  }
+
+  if (cell.isEdge()) {
+    cell.attr('line/filter', 'drop-shadow(0 0 3px rgba(79,211,255,1)) drop-shadow(0 0 5px rgba(79,211,255,0.85))')
+  }
+}
+
+function currentSelectedIds() {
+  if (editorStore.selectedCellIds.length) return [...editorStore.selectedCellIds]
+  if (editorStore.selectedCellId) return [editorStore.selectedCellId]
+  return []
+}
+
+function handleListHover(id: string | null) {
+  hoveredCellId.value = id
+  applySelectionEffects(currentSelectedIds())
+}
+
+function handleListSelect(id: string) {
+  const graph = getGraph()
+  if (!graph) return
+  const cell = graph.getCellById(id)
+  if (!cell) return
+  graph.cleanSelection()
+  graph.select(cell)
+  syncSelectionByIds([id])
 }
 
 function withPatchSync(action: () => void) {
@@ -215,12 +296,14 @@ function handleGraphReady(container: HTMLDivElement) {
   })
 
   graph.on('node:change:*', ({ node }: any) => {
+    updateCanvasItems()
     if (!graphStore.isApplyingPatch && editorStore.selectedCellId === node.id) {
       graphStore.setSelectedNode(readNodeSelection(graph, node.id))
     }
   })
 
   graph.on('edge:change:*', ({ edge }: any) => {
+    updateCanvasItems()
     if (!graphStore.isApplyingPatch && editorStore.selectedCellId === edge.id) {
       graphStore.setSelectedEdge(readEdgeSelection(graph, edge.id))
     }

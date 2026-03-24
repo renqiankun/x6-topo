@@ -7,9 +7,11 @@ import {
   Snapline,
   Transform,
 } from '@antv/x6'
+import { register } from '@antv/x6-vue-shape'
 import { defaultCanvasProps, defaultEdgeSelectionData, defaultNodeSelectionData, defaultPortCounts, makePortsFromList } from '../constants/defaults'
 import { getDeviceByType } from '../constants/devices'
 import { toDataUrl } from '../constants/svgs'
+import VueWidgetNode from '../components/nodes/VueWidgetNode.vue'
 import type {
   CanvasProps,
   DeviceDefinition,
@@ -62,6 +64,7 @@ function speedToDuration(speed: number) {
 
 export function syncDeviceIconSize(node: any) {
   if (!node?.isNode?.()) return
+  if (node.shape !== 'x-device') return
   const size = node.size()
   node.attr('icon/width', Math.max(0, Number(size.width) - 8))
   node.attr('icon/height', Math.max(0, Number(size.height) - 18))
@@ -108,6 +111,12 @@ export function registerCustomNodes() {
     },
     true,
   )
+  register({
+    shape: 'x-vue-widget',
+    width: 188,
+    height: 96,
+    component: VueWidgetNode,
+  })
   nodeRegistered = true
 }
 
@@ -233,6 +242,121 @@ export function addDeviceNode(graph: Graph, type: string, x: number, y: number) 
   const portList = buildPortListFromCounts(counts)
   const portsConfig = makePortsFromList(portList)
 
+  if (device.renderKind === 'text') {
+    return graph.addNode({
+      shape: 'rect',
+      x,
+      y,
+      width: device.size.w,
+      height: device.size.h,
+      attrs: {
+        body: {
+          fill: device.fill,
+          stroke: device.stroke,
+          strokeWidth: device.strokeWidth,
+          rx: 6,
+          ry: 6,
+        },
+        label: {
+          text: device.label,
+          fill: '#e7f2ff',
+          fontSize: 13,
+          fontWeight: 700,
+          textAnchor: 'middle',
+          refX: '50%',
+          refY: '50%',
+          textVerticalAnchor: 'middle',
+        },
+      },
+      ports: portsConfig,
+      data: {
+        ...deepClone(defaultNodeSelectionData),
+        runtimeId: '',
+        label: device.label,
+        deviceType: device.type,
+        voltage: '10kV',
+        fill: device.fill,
+        stroke: device.stroke,
+        strokeWidth: device.strokeWidth,
+        showLabel: true,
+        portCounts: counts,
+        portList,
+        portsConfig,
+        svgContent: '',
+        origStroke: device.stroke,
+        origSw: device.strokeWidth,
+      },
+    })
+  }
+
+  if (device.renderKind === 'vue') {
+    return graph.addNode({
+      shape: 'x-vue-widget',
+      x,
+      y,
+      width: device.size.w,
+      height: device.size.h,
+      ports: portsConfig,
+      data: {
+        ...deepClone(defaultNodeSelectionData),
+        runtimeId: '',
+        label: device.label,
+        deviceType: device.type,
+        voltage: '10kV',
+        fill: device.fill,
+        stroke: device.stroke,
+        strokeWidth: device.strokeWidth,
+        showLabel: false,
+        portCounts: counts,
+        portList,
+        portsConfig,
+        svgContent: device.svg,
+        origStroke: device.stroke,
+        origSw: device.strokeWidth,
+      },
+    })
+  }
+
+  if (device.renderKind === 'graphic') {
+    return graph.addNode({
+      shape: 'rect',
+      x,
+      y,
+      width: device.size.w,
+      height: device.size.h,
+      attrs: {
+        body: {
+          fill: 'rgba(0,0,0,0)',
+          stroke: device.stroke,
+          strokeWidth: device.strokeWidth,
+          rx: 8,
+          ry: 8,
+        },
+        label: {
+          text: '',
+        },
+      },
+      ports: portsConfig,
+      data: {
+        ...deepClone(defaultNodeSelectionData),
+        runtimeId: '',
+        label: device.label,
+        deviceType: device.type,
+        voltage: '10kV',
+        fill: 'rgba(0,0,0,0)',
+        stroke: device.stroke,
+        strokeWidth: device.strokeWidth,
+        showLabel: false,
+        portCounts: counts,
+        portList,
+        portsConfig,
+        svgContent: '',
+        origStroke: device.stroke,
+        origSw: device.strokeWidth,
+      },
+    })
+  }
+
   return graph.addNode({
     shape: 'x-device',
     x,
@@ -264,10 +388,11 @@ export function addDeviceNode(graph: Graph, type: string, x: number, y: number) 
       runtimeId: '',
       label: device.label,
       deviceType: device.type,
-      voltage: device.defaultVoltage ?? '10kV',
+      voltage: '10kV',
       fill: device.fill,
       stroke: device.stroke,
       strokeWidth: device.strokeWidth,
+      showLabel: true,
       portCounts: counts,
       portList,
       portsConfig,
@@ -741,7 +866,7 @@ export function readNodeSelection(graph: Graph, id: string): NodeSelectionData |
 
   return {
     id: node.id,
-    runtimeId: data.runtimeId ?? data.devId ?? '',
+    runtimeId: data.runtimeId ?? '',
     label: data.label ?? node.attr('label/text') ?? '',
     deviceType: data.deviceType ?? 'device',
     status: data.status ?? 'running',
@@ -759,7 +884,6 @@ export function readNodeSelection(graph: Graph, id: string): NodeSelectionData |
     labelPos: data.labelPos ?? 'bottom',
     showLabel: data.showLabel ?? true,
     voltage: data.voltage ?? '10kV',
-    devId: data.devId ?? '',
     rotatable: data.rotatable ?? true,
     resizable: data.resizable ?? true,
     locked: data.locked ?? false,

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="panel-stack">
     <SectionCard title="基本信息">
       <el-form label-position="top" size="small">
@@ -48,7 +48,7 @@
           <el-slider :min="1" :max="8" :step="0.5" v-model="modelValue.strokeWidth" @input="emitPatch('strokeWidth', Number($event))" />
         </el-form-item>
         <el-form-item label="圆角">
-          <el-slider :min="0" :max="20" :step="1"  v-model="modelValue.radius" @input="emitPatch('radius', Number($event))" />
+          <el-slider :min="0" :max="20" :step="1" v-model="modelValue.radius" @input="emitPatch('radius', Number($event))" />
         </el-form-item>
         <el-form-item label="透明度">
           <el-slider :min="0.1" :max="1" :step="0.05" v-model="modelValue.opacity" @input="emitPatch('opacity', Number($event))" />
@@ -59,7 +59,7 @@
     <SectionCard title="标签">
       <el-form label-position="top" size="small">
         <el-form-item label="字号">
-          <el-slider :min="8" :max="24" :step="1"  v-model="modelValue.fontSize" @change="emitPatch('fontSize', Number($event))" />
+          <el-slider :min="8" :max="24" :step="1" v-model="modelValue.fontSize" @change="emitPatch('fontSize', Number($event))" />
         </el-form-item>
         <el-form-item label="颜色">
           <el-color-picker :model-value="modelValue.fontColor" @change="emitPatch('fontColor', $event || '#e0f0ff')" />
@@ -128,7 +128,7 @@
             <el-option label="%" value="%" />
             <el-option label="px" value="px" />
           </el-select>
-          <el-input-number :model-value="item.pos" :step="1" @change="updatePort(index, 'pos', Number($event))" />
+          <el-input-number style="width:100px;" :controls="false" :model-value="item.pos" :step="1" @change="updatePort(index, 'pos', Number($event))" />
         </div>
       </div>
     </SectionCard>
@@ -140,9 +140,6 @@
         </el-form-item>
         <el-form-item label="唯一标识">
           <el-input :model-value="modelValue.runtimeId" @input="emitPatch('runtimeId', String($event))" />
-        </el-form-item>
-        <el-form-item label="设备编号">
-          <el-input :model-value="modelValue.devId" @input="emitPatch('devId', String($event))" />
         </el-form-item>
         <el-form-item label="可旋转">
           <el-switch :model-value="modelValue.rotatable" @change="emitPatch('rotatable', $event)" />
@@ -286,7 +283,7 @@ function onPreviewPointerUp() {
 .port-preview {
   position: relative;
   width: 220px;
-  height: 140px;
+  height: 90px;
   border: 1px dashed #2d4a77;
   border-radius: 8px;
   background: #081226;
@@ -295,10 +292,10 @@ function onPreviewPointerUp() {
 
 .port-preview__node {
   position: absolute;
-  left: 12%;
-  top: 16%;
-  width: 76%;
-  height: 68%;
+  left: 0%;
+  top: 0%;
+  width: 100%;
+  height: 100%;
   border: 1px solid #00d4ff;
   border-radius: 8px;
   background: rgba(0, 212, 255, 0.08);

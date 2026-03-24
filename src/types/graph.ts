@@ -69,7 +69,6 @@ export interface NodeSelectionData {
   labelPos: LabelPosition
   showLabel: boolean
   voltage: string
-  devId: string
   rotatable: boolean
   resizable: boolean
   locked: boolean
@@ -111,11 +110,18 @@ export interface DeviceDefinition {
   label: string
   category: string
   svg: string
+  renderKind?: 'standard' | 'text' | 'graphic' | 'vue'
   size: { w: number; h: number }
   fill: string
   stroke: string
   strokeWidth: number
-  defaultVoltage?: string
+}
+
+export interface CanvasListItem {
+  id: string
+  kind: 'node' | 'edge'
+  label: string
+  type: string
 }
 
 export interface DeviceCategory {
