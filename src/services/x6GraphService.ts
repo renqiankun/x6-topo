@@ -789,7 +789,6 @@ export function patchEdgeStyle(graph: Graph, id: string, payload: EdgeSelectionD
             text: payload.label,
             fill: payload.color,
             fontSize: 10,
-            fontFamily: 'Noto Sans SC,sans-serif',
           },
           rect: {
             fill: '#0a1220',

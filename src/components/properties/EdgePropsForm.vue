@@ -73,7 +73,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="箭头尺寸">
-          <el-slider :min="4" :max="20" :step="1" :model-value="modelValue.markSize" @input="update('markSize', Number($event))" />
+          <el-slider :min="1" :max="20" :step="1" :model-value="modelValue.markSize" @input="update('markSize', Number($event))" />
         </el-form-item>
       </el-form>
     </SectionCard>
@@ -84,7 +84,7 @@
           <el-switch :model-value="modelValue.anim" @change="update('anim', $event)" />
         </el-form-item>
         <el-form-item label="速度">
-          <el-slider :min="0.5" :max="6" :step="0.1" :model-value="modelValue.speed" @input="update('speed', Number($event))" />
+          <el-slider :min="0.5" :max="20" :step="0.1" :model-value="modelValue.speed" @input="update('speed', Number($event))" />
         </el-form-item>
         <el-form-item label="方向">
           <el-radio-group :model-value="modelValue.dir" @change="update('dir', $event)">
